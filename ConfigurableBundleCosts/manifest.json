@@ -1,0 +1,10 @@
+{
+  "Name": "Configurable Bundle Costs",
+  "Author": "Vertigon",
+  "Version": "0.1.0",
+  "Description": "Allows the user to configure the cost of purchasing vault/Joja bundles.",
+  "UniqueID": "Vertigon.ConfigurableBundleCosts",
+  "EntryDll": "ConfigurableBundleCosts.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": [ "Nexus:9444" ]
+}
