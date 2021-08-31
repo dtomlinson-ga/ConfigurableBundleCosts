@@ -52,7 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatches\BundlePricePatch.cs" />
+    <Compile Include="HarmonyPatches\HarmonyPatches.cs" />
     <Compile Include="Utilities\AssetEditor.cs" />
     <Compile Include="Utilities\Globals.cs" />
     <Compile Include="Config\IGenericModConfigMenuAPI.cs" />

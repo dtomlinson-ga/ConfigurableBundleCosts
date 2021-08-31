@@ -128,6 +128,15 @@ namespace ConfigurableBundleCosts
 				(int var) => Globals.Config.Joja.panningCost = var
 			);
 
+			AddIntUnclamped("Movie Theater Cost", "Cost to purchase the Movie Theater from Joja",
+				() => Globals.Config.Joja.movieTheaterCost,
+				(int var) => 
+					{
+						Globals.Config.Joja.movieTheaterCost = var;
+						//AssetEditor.InvalidateCache(); // dialogue line is modified depending on value of movieTheaterCost
+					}
+			);
+
 			AddLabel("Vault Bundle Costs");
 
 			AddIntUnclamped("Vault Bundle 1 Cost", "Cost of Vault Bundle 1",

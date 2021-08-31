@@ -14,12 +14,14 @@
 
 using Harmony;
 using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 
 namespace ConfigurableBundleCosts
 {
-	public class BundlePricePatch
+	public class HarmonyPatches
 	{
 
 		/// <returns><c>True</c> if successfully patched, <c>False</c> if Exception is encountered.</returns>
@@ -31,7 +33,12 @@ namespace ConfigurableBundleCosts
 
 				harmony.Patch(
 					original: typeof(JojaCDMenu).GetMethod("getPriceFromButtonNumber"),
-					prefix: new HarmonyMethod(typeof(BundlePricePatch).GetMethod("GetPriceFromButtonNumber_Prefix"))
+					prefix: new HarmonyMethod(typeof(HarmonyPatches).GetMethod("GetPriceFromButtonNumber_Prefix"))
+				);
+
+				harmony.Patch(
+					original: AccessTools.Method(typeof(JojaMart), "buyMovieTheater"),
+					prefix: new HarmonyMethod(typeof(HarmonyPatches).GetMethod("buyMovieTheater_Prefix"))
 				);
 
 				return true;
@@ -75,6 +82,39 @@ namespace ConfigurableBundleCosts
 			catch (Exception ex)
 			{
 				Globals.Monitor.Log($"Failed in {nameof(GetPriceFromButtonNumber_Prefix)}:\n{ex}", LogLevel.Error);
+				return true; // run original logic
+			}
+		}
+
+		private bool buyMovieTheater_Prefix(int response, bool __result)
+		{
+			try
+			{
+				if (response == 0)
+				{
+					if (Game1.player.Money >= Globals.Config.Joja.movieTheaterCost)
+					{
+						Game1.player.Money -= Globals.Config.Joja.movieTheaterCost;
+						Game1.addMailForTomorrow("ccMovieTheater", noLetter: true, sendToEveryone: true);
+						Game1.addMailForTomorrow("ccMovieTheaterJoja", noLetter: true, sendToEveryone: true);
+						if (Game1.player.team.theaterBuildDate.Value < 0)
+						{
+							Game1.player.team.theaterBuildDate.Set(Game1.Date.TotalDays + 1);
+						}
+						JojaMart.Morris.setNewDialogue(Game1.content.LoadString("Data\\ExtraDialogue:Morris_TheaterBought"));
+						Game1.drawDialogue(JojaMart.Morris);
+					}
+					else
+					{
+						Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11325"));
+					}
+				}
+				__result = true;
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Globals.Monitor.Log($"Failed in {nameof(buyMovieTheater_Prefix)}:\n{ex}", LogLevel.Error);
 				return true; // run original logic
 			}
 		}

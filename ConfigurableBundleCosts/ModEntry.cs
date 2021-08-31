@@ -14,6 +14,7 @@
 
 using StardewModdingAPI;
 using StardewValley;
+using System;
 
 namespace ConfigurableBundleCosts
 {
@@ -34,14 +35,17 @@ namespace ConfigurableBundleCosts
 			modAssetEditor = new AssetEditor();
 			helper.Content.AssetEditors.Add(modAssetEditor);
 
-			helper.Events.GameLoop.GameLaunched += (sender, args) => ModConfigMenuHelper.TryLoadModConfigMenu();
+			helper.Events.GameLoop.GameLaunched += (sender, args) =>
+			{
+				ModConfigMenuHelper.TryLoadModConfigMenu();
+				LoadAssets();
+			};
 			helper.Events.GameLoop.SaveLoaded += (sender, args) =>
 			{
-				LoadAssets();
 				CheckBundleData();
 			};
 
-			if (BundlePricePatch.ApplyHarmonyPatches())
+			if (HarmonyPatches.ApplyHarmonyPatches())
 				Monitor.Log("Patches successfully applied");
 		}
 
@@ -55,10 +59,12 @@ namespace ConfigurableBundleCosts
 		{
 			AssetEditor.InvalidateCache();
 
-
-			if (Game1.netWorldState?.Value != null)
+			try {
+				Game1.netWorldState?.Value?.SetBundleData(AssetEditor.bundleData);
+			}
+			catch (Exception ex)
 			{
-				Game1.netWorldState.Value.SetBundleData(AssetEditor.bundleData);
+				Globals.Monitor.Log($"Exception encountered while updating bundle data in {nameof(CheckBundleData)}: {ex}", LogLevel.Error);
 			}
 		}
 	}

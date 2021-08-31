@@ -30,6 +30,7 @@ namespace ConfigurableBundleCosts
 			public int bridgeCost = 25000;      // button 2
 			public int greenhouseCost = 35000;  // button 3
 			public int panningCost = 20000;     // button 4
+			public int movieTheaterCost = 500000;
 		}
 
 		public class VaultConfig
@@ -39,6 +40,7 @@ namespace ConfigurableBundleCosts
 			public int bundle3 = 10000;
 			public int bundle4 = 25000;
 		}
+
 
 	}
 }

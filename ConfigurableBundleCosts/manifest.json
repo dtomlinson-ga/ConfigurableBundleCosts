@@ -1,7 +1,7 @@
 {
   "Name": "Configurable Bundle Costs",
   "Author": "Vertigon",
-  "Version": "0.1.0",
+  "Version": "0.2.0",
   "Description": "Allows the user to configure the cost of purchasing vault/Joja bundles.",
   "UniqueID": "Vertigon.ConfigurableBundleCosts",
   "EntryDll": "ConfigurableBundleCosts.dll",

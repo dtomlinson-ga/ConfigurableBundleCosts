@@ -26,7 +26,7 @@ namespace ConfigurableBundleCosts
 		private static Texture2D cdFont;
 		public static Dictionary<string, string> bundleData;
 
-		private Vector2
+		private static Vector2
 			busOnesDigit = new Vector2(130, 59),
 			minecartsOnesDigit = new Vector2(301, 59),
 			bridgeOnesDigit = new Vector2(131, 89),
@@ -42,7 +42,12 @@ namespace ConfigurableBundleCosts
 		public static bool LoadAssets()
 		{
 			cdFont = Globals.Helper.Content.Load<Texture2D>("assets/cdFont.png");
-			return cdFont != null;
+
+			// need to initialize bundle data asap so NetWorldState.SetBundleData doesn't break
+			Dictionary<string, string> bundleDataAsset = Globals.Helper.Content.Load<Dictionary<string, string>>("Data/Bundles", ContentSource.GameContent);
+			bundleData = bundleDataAsset;
+
+			return bundleData != null && cdFont != null;
 		}
 
 		/// <summary>
@@ -50,8 +55,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
-			return asset.AssetNameEquals("LooseSprites/JojaCDForm") ||
-				asset.AssetNameEquals("Data/Bundles");
+			return asset.AssetNameEquals("LooseSprites/JojaCDForm")
+				|| asset.AssetNameEquals("Data/Bundles")
+				|| asset.AssetNameEquals("Data/ExtraDialogue");
 		}
 
 		/// <summary>
@@ -60,7 +66,8 @@ namespace ConfigurableBundleCosts
 		public void Edit<T>(IAssetData asset)
 		{
 			if (asset.AssetNameEquals("LooseSprites/JojaCDForm")) UpdateCDForm(asset);
-			if (asset.AssetNameEquals("Data/Bundles")) UpdateBundles(asset);
+			else if (asset.AssetNameEquals("Data/Bundles")) UpdateBundles(asset);
+			else if (asset.AssetNameEquals("Data/ExtraDialogue")) UpdateExtraDialogue(asset);
 
 		}
 
@@ -71,9 +78,10 @@ namespace ConfigurableBundleCosts
 		{
 			Globals.Helper.Content.InvalidateCache("LooseSprites/JojaCDForm");
 			Globals.Helper.Content.InvalidateCache("Data/Bundles");
+			Globals.Helper.Content.InvalidateCache("Data/ExtraDialogue");
 		}
 
-		private Dictionary<string, string> GetCurrentBundlePrices()
+		private static Dictionary<string, string> GetCurrentBundlePrices()
 		{
 			return new Dictionary<string, string>()
 			{
@@ -85,7 +93,7 @@ namespace ConfigurableBundleCosts
 			};
 		}
 
-		private void UpdateCDForm(IAssetData asset)
+		private static void UpdateCDForm(IAssetData asset)
 		{
 			IAssetDataForImage cdForm = asset.AsImage();
 
@@ -146,7 +154,7 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		private void UpdateBundles(IAssetData asset)
+		private static void UpdateBundles(IAssetData asset)
 		{
 			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
@@ -213,7 +221,22 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		private Vector2 GetDestStartPos(string key)
+		private static void UpdateExtraDialogue(IAssetData asset)
+		{
+			if (Globals.Config.Joja.movieTheaterCost == 500000) return;
+
+			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
+
+			string originalValue = 500000.ToString("#,###", culture);
+			string newValue = Globals.Config.Joja.movieTheaterCost.ToString("#,###", culture);
+
+			Globals.Monitor.Log($"Original cost string: {originalValue}\nNew cost string: {newValue}");
+
+			data["Morris_BuyMovieTheater"] = data["Morris_BuyMovieTheater"].Replace(originalValue, newValue);
+		}
+
+		private static Vector2 GetDestStartPos(string key)
 		{
 			switch (key)
 			{
