@@ -15,6 +15,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <EnableHarmony>true</EnableHarmony>
+    <LangVersion>latest</LangVersion>
     <GamePath>D:\Games\SteamLibrary\steamapps\common\Stardew Valley</GamePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -62,6 +63,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="i18n\de.json" />
+    <None Include="i18n\default.json" />
+    <None Include="i18n\es.json" />
+    <None Include="i18n\fr.json" />
+    <None Include="i18n\hu.json" />
+    <None Include="i18n\it.json" />
+    <None Include="i18n\ja.json" />
+    <None Include="i18n\ko.json" />
+    <None Include="i18n\pt.json" />
+    <None Include="i18n\ru.json" />
+    <None Include="i18n\tr.json" />
+    <None Include="i18n\zh.json" />
     <None Include="LICENSE" />
     <None Include="manifest.json" />
     <None Include="packages.config" />

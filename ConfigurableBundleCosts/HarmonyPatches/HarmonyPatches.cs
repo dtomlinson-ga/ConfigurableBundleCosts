@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see https://www.gnu.org/licenses/.
 
-using Harmony;
+using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
@@ -29,7 +29,7 @@ namespace ConfigurableBundleCosts
 		{
 			try
 			{
-				HarmonyInstance harmony = HarmonyInstance.Create(Globals.Manifest.UniqueID);
+				Harmony harmony = new(Globals.Manifest.UniqueID);
 
 				harmony.Patch(
 					original: typeof(JojaCDMenu).GetMethod("getPriceFromButtonNumber"),
@@ -38,7 +38,7 @@ namespace ConfigurableBundleCosts
 
 				harmony.Patch(
 					original: AccessTools.Method(typeof(JojaMart), "buyMovieTheater"),
-					prefix: new HarmonyMethod(typeof(HarmonyPatches).GetMethod("buyMovieTheater_Prefix"))
+					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(buyMovieTheater_Prefix))
 				);
 
 				return true;
@@ -86,7 +86,8 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		private bool buyMovieTheater_Prefix(int response, bool __result)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Harmony method - maintain case from original")]
+		public static bool buyMovieTheater_Prefix(int response, bool __result)
 		{
 			try
 			{

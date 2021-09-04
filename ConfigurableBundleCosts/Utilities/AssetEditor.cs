@@ -228,12 +228,10 @@ namespace ConfigurableBundleCosts
 			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
 
-			string originalValue = 500000.ToString("#,###", culture);
 			string newValue = Globals.Config.Joja.movieTheaterCost.ToString("#,###", culture);
 
-			Globals.Monitor.Log($"Original cost string: {originalValue}\nNew cost string: {newValue}");
-
-			data["Morris_BuyMovieTheater"] = data["Morris_BuyMovieTheater"].Replace(originalValue, newValue);
+			data["Morris_BuyMovieTheater"] = Globals.Helper.Translation.Get("Morris_BuyMovieTheater", new { buyValue = newValue });
+			data["Morris_TheaterBought"] = Globals.Helper.Translation.Get("Morris_TheaterBought", new { buyValue = newValue });
 		}
 
 		private static Vector2 GetDestStartPos(string key)

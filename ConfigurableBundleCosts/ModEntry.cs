@@ -45,14 +45,12 @@ namespace ConfigurableBundleCosts
 				CheckBundleData();
 			};
 
-			if (HarmonyPatches.ApplyHarmonyPatches())
-				Monitor.Log("Patches successfully applied");
+			Monitor.Log(HarmonyPatches.ApplyHarmonyPatches() ? "Patches successfully applied" : "Failed to apply patches");
 		}
 
 		private static void LoadAssets()
 		{
-			if (AssetEditor.LoadAssets()) Globals.Monitor.Log("Loaded assets");
-			else Globals.Monitor.Log("Failed to load assets");
+			Globals.Monitor.Log(AssetEditor.LoadAssets() ? "Loaded assets" : "Failed to load assets");
 		}
 
 		private static void CheckBundleData()
