@@ -99,13 +99,15 @@ namespace ConfigurableBundleCosts
 				AddLabel("");
 			}
 
+			AddCheckBox("Apply Joja config", "Enables or disables these values being applied. May be useful if you are using another mod or content pack which alters these values.",
+				() => Globals.Config.Joja.applyValues,
+				(bool var) => Globals.Config.Joja.applyValues = var
+			);
+
 			AddLabel("Joja Bundle Costs");
 			AddIntUnclamped("Bus Cost", "Cost to repair the bus to Calico Desert",
 				() => Globals.Config.Joja.busCost,
-				(int var) =>
-					{
-						Globals.Config.Joja.busCost = var;
-					}
+				(int var) => Globals.Config.Joja.busCost = var
 			);
 
 			AddIntUnclamped("Minecarts Cost", "Cost to repair the minecart system around town",
@@ -137,6 +139,12 @@ namespace ConfigurableBundleCosts
 					}
 			);
 
+			AddLabel("");
+
+			AddCheckBox("Apply Vault config", "Enables or disables these values being applied. May be useful if you are using another mod or content pack which alters these values.",
+				() => Globals.Config.Vault.applyValues,
+				(bool var) => Globals.Config.Vault.applyValues = var
+			);
 			AddLabel("Vault Bundle Costs");
 
 			AddIntUnclamped("Vault Bundle 1 Cost", "Cost of Vault Bundle 1",

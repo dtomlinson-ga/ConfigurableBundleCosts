@@ -33,7 +33,7 @@ namespace ConfigurableBundleCosts
 
 				harmony.Patch(
 					original: typeof(JojaCDMenu).GetMethod("getPriceFromButtonNumber"),
-					prefix: new HarmonyMethod(typeof(HarmonyPatches).GetMethod("GetPriceFromButtonNumber_Prefix"))
+					prefix: new HarmonyMethod(typeof(HarmonyPatches), nameof(getPriceFromButtonNumber_Prefix))
 				);
 
 				harmony.Patch(
@@ -50,26 +50,27 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		public static bool GetPriceFromButtonNumber_Prefix(int buttonNumber, ref int __result)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Harmony method - maintain case from original")]
+		public static bool getPriceFromButtonNumber_Prefix(int buttonNumber, ref int __result)
 		{
 			try
 			{
 				switch (buttonNumber)
 				{
 					case 0:
-						__result = Globals.Config.Joja.busCost;
+						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.busCost : 40000;
 						break;
 					case 1:
-						__result = Globals.Config.Joja.minecartsCost;
+						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.minecartsCost : 15000;
 						break;
 					case 2:
-						__result = Globals.Config.Joja.bridgeCost;
+						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.bridgeCost : 25000;
 						break;
 					case 3:
-						__result = Globals.Config.Joja.greenhouseCost;
+						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.greenhouseCost : 35000;
 						break;
 					case 4:
-						__result = Globals.Config.Joja.panningCost;
+						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.panningCost : 20000;
 						break;
 					default:
 						__result = 10000;
@@ -81,7 +82,7 @@ namespace ConfigurableBundleCosts
 			}
 			catch (Exception ex)
 			{
-				Globals.Monitor.Log($"Failed in {nameof(GetPriceFromButtonNumber_Prefix)}:\n{ex}", LogLevel.Error);
+				Globals.Monitor.Log($"Failed in {nameof(getPriceFromButtonNumber_Prefix)}:\n{ex}", LogLevel.Error);
 				return true; // run original logic
 			}
 		}
@@ -91,11 +92,13 @@ namespace ConfigurableBundleCosts
 		{
 			try
 			{
+				int cost = Globals.Config.Joja.applyValues ? Globals.Config.Joja.movieTheaterCost : 500000;
+
 				if (response == 0)
 				{
-					if (Game1.player.Money >= Globals.Config.Joja.movieTheaterCost)
+					if (Game1.player.Money >= cost)
 					{
-						Game1.player.Money -= Globals.Config.Joja.movieTheaterCost;
+						Game1.player.Money -= cost;
 						Game1.addMailForTomorrow("ccMovieTheater", noLetter: true, sendToEveryone: true);
 						Game1.addMailForTomorrow("ccMovieTheaterJoja", noLetter: true, sendToEveryone: true);
 						if (Game1.player.team.theaterBuildDate.Value < 0)

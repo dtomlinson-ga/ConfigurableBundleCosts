@@ -15,8 +15,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace ConfigurableBundleCosts
@@ -35,13 +37,19 @@ namespace ConfigurableBundleCosts
 			panningOnesDigitGerman = new Vector2(130, 127)
 		;
 
+		private static readonly string assetsFolder = "assets",
+			cdFontName = "cdFont.png",
+			jojaCDForm = PathUtilities.NormalizeAssetName("LooseSprites/JojaCDForm"),
+			bundles = PathUtilities.NormalizeAssetName("Data/Bundles"),
+			extraDialogue = PathUtilities.NormalizeAssetName("Data/ExtraDialogue");
+
 		/// <summary>
 		/// Attempts to load mod assets.
 		/// </summary>
 		/// <returns><c>True</c> if successful, <c>False</c> otherwise.</returns>
 		public static bool LoadAssets()
 		{
-			cdFont = Globals.Helper.Content.Load<Texture2D>("assets/cdFont.png");
+			cdFont = Globals.Helper.Content.Load<Texture2D>(Path.Combine(assetsFolder, cdFontName));
 
 			// need to initialize bundle data asap so NetWorldState.SetBundleData doesn't break
 			Dictionary<string, string> bundleDataAsset = Globals.Helper.Content.Load<Dictionary<string, string>>("Data/Bundles", ContentSource.GameContent);
@@ -55,9 +63,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
-			return asset.AssetNameEquals("LooseSprites/JojaCDForm")
-				|| asset.AssetNameEquals("Data/Bundles")
-				|| asset.AssetNameEquals("Data/ExtraDialogue");
+			return (asset.AssetNameEquals(jojaCDForm) && Globals.Config.Joja.applyValues)
+				|| (asset.AssetNameEquals(bundles) && Globals.Config.Vault.applyValues)
+				|| (asset.AssetNameEquals(extraDialogue) && Globals.Config.Joja.applyValues);
 		}
 
 		/// <summary>
@@ -65,9 +73,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public void Edit<T>(IAssetData asset)
 		{
-			if (asset.AssetNameEquals("LooseSprites/JojaCDForm")) UpdateCDForm(asset);
-			else if (asset.AssetNameEquals("Data/Bundles")) UpdateBundles(asset);
-			else if (asset.AssetNameEquals("Data/ExtraDialogue")) UpdateExtraDialogue(asset);
+			if (asset.AssetNameEquals(jojaCDForm) && Globals.Config.Joja.applyValues) UpdateCDForm(asset);
+			else if (asset.AssetNameEquals(bundles) && Globals.Config.Vault.applyValues) UpdateBundles(asset);
+			else if (asset.AssetNameEquals(extraDialogue) && Globals.Config.Joja.applyValues) UpdateExtraDialogue(asset);
 
 		}
 
@@ -76,9 +84,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public static void InvalidateCache()
 		{
-			Globals.Helper.Content.InvalidateCache("LooseSprites/JojaCDForm");
-			Globals.Helper.Content.InvalidateCache("Data/Bundles");
-			Globals.Helper.Content.InvalidateCache("Data/ExtraDialogue");
+			Globals.Helper.Content.InvalidateCache(jojaCDForm);
+			Globals.Helper.Content.InvalidateCache(bundles);
+			Globals.Helper.Content.InvalidateCache(extraDialogue);
 		}
 
 		private static Dictionary<string, string> GetCurrentBundlePrices()

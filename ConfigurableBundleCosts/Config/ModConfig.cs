@@ -25,6 +25,7 @@ namespace ConfigurableBundleCosts
 
 		public class JojaConfig
 		{
+			public bool applyValues = true;
 			public int busCost = 40000;         // button 0
 			public int minecartsCost = 15000;   // button 1
 			public int bridgeCost = 25000;      // button 2
@@ -35,6 +36,7 @@ namespace ConfigurableBundleCosts
 
 		public class VaultConfig
 		{
+			public bool applyValues = true;
 			public int bundle1 = 2500;
 			public int bundle2 = 5000;
 			public int bundle3 = 10000;
