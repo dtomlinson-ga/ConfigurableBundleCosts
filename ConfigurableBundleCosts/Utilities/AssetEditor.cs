@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
+using StardewValley;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -53,7 +54,7 @@ namespace ConfigurableBundleCosts
 
 			// need to initialize bundle data asap so NetWorldState.SetBundleData doesn't break
 			Dictionary<string, string> bundleDataAsset = Globals.Helper.Content.Load<Dictionary<string, string>>("Data/Bundles", ContentSource.GameContent);
-			bundleData = bundleDataAsset;
+			bundleData = Game1.netWorldState?.Value?.BundleData ?? bundleDataAsset;
 
 			return bundleData != null && cdFont != null;
 		}
@@ -63,9 +64,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
-			return (asset.AssetNameEquals(jojaCDForm) && Globals.Config.Joja.applyValues)
-				|| (asset.AssetNameEquals(bundles) && Globals.Config.Vault.applyValues)
-				|| (asset.AssetNameEquals(extraDialogue) && Globals.Config.Joja.applyValues);
+			return (asset.AssetNameEquals(jojaCDForm) && Globals.CurrentValues.Joja.applyValues)
+				|| (asset.AssetNameEquals(bundles) && Globals.CurrentValues.Vault.applyValues)
+				|| (asset.AssetNameEquals(extraDialogue) && Globals.CurrentValues.Joja.applyValues);
 		}
 
 		/// <summary>
@@ -73,9 +74,9 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public void Edit<T>(IAssetData asset)
 		{
-			if (asset.AssetNameEquals(jojaCDForm) && Globals.Config.Joja.applyValues) UpdateCDForm(asset);
-			else if (asset.AssetNameEquals(bundles) && Globals.Config.Vault.applyValues) UpdateBundles(asset);
-			else if (asset.AssetNameEquals(extraDialogue) && Globals.Config.Joja.applyValues) UpdateExtraDialogue(asset);
+			if (asset.AssetNameEquals(jojaCDForm) && Globals.CurrentValues.Joja.applyValues) UpdateCDForm(asset);
+			else if (asset.AssetNameEquals(bundles) && Globals.CurrentValues.Vault.applyValues) UpdateBundles(asset);
+			else if (asset.AssetNameEquals(extraDialogue) && Globals.CurrentValues.Joja.applyValues) UpdateExtraDialogue(asset);
 
 		}
 
@@ -93,11 +94,11 @@ namespace ConfigurableBundleCosts
 		{
 			return new Dictionary<string, string>()
 			{
-				["bus"] = Globals.Config.Joja.busCost.ToString(),
-				["minecarts"] = Globals.Config.Joja.minecartsCost.ToString(),
-				["bridge"] = Globals.Config.Joja.bridgeCost.ToString(),
-				["greenhouse"] = Globals.Config.Joja.greenhouseCost.ToString(),
-				["panning"] = Globals.Config.Joja.panningCost.ToString()
+				["bus"] = Globals.CurrentValues.Joja.busCost.ToString(),
+				["minecarts"] = Globals.CurrentValues.Joja.minecartsCost.ToString(),
+				["bridge"] = Globals.CurrentValues.Joja.bridgeCost.ToString(),
+				["greenhouse"] = Globals.CurrentValues.Joja.greenhouseCost.ToString(),
+				["panning"] = Globals.CurrentValues.Joja.panningCost.ToString()
 			};
 		}
 
@@ -167,10 +168,10 @@ namespace ConfigurableBundleCosts
 			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
 
-			int bundle1 = Globals.Config.Vault.bundle1,
-				bundle2 = Globals.Config.Vault.bundle2,
-				bundle3 = Globals.Config.Vault.bundle3,
-				bundle4 = Globals.Config.Vault.bundle4;
+			int bundle1 = Globals.CurrentValues.Vault.bundle1,
+				bundle2 = Globals.CurrentValues.Vault.bundle2,
+				bundle3 = Globals.CurrentValues.Vault.bundle3,
+				bundle4 = Globals.CurrentValues.Vault.bundle4;
 
 
 			string bundle1String = bundle1.ToString("#,###", culture),
@@ -231,12 +232,12 @@ namespace ConfigurableBundleCosts
 
 		private static void UpdateExtraDialogue(IAssetData asset)
 		{
-			if (Globals.Config.Joja.movieTheaterCost == 500000) return;
+			if (Globals.CurrentValues.Joja.movieTheaterCost == 500000) return;
 
 			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
 
-			string newValue = Globals.Config.Joja.movieTheaterCost.ToString("#,###", culture);
+			string newValue = Globals.CurrentValues.Joja.movieTheaterCost.ToString("#,###", culture);
 
 			data["Morris_BuyMovieTheater"] = Globals.Helper.Translation.Get("Morris_BuyMovieTheater", new { buyValue = newValue });
 			data["Morris_TheaterBought"] = Globals.Helper.Translation.Get("Morris_TheaterBought", new { buyValue = newValue });
@@ -264,11 +265,7 @@ namespace ConfigurableBundleCosts
 					}
 				case "panning":
 					{
-						string locale = Globals.Helper.Translation.Locale;
-
-						Globals.Monitor.Log($"Current culture: {locale}");
-
-						if (locale.ToLower().Equals("de-de"))
+						if (Globals.Helper.Translation.Locale.ToLower().Equals("de-de"))
 							return panningOnesDigitGerman;
 						else return panningOnesDigit;
 					}

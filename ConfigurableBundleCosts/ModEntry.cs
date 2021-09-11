@@ -13,8 +13,11 @@
 // along with this program.  If not, see https://www.gnu.org/licenses/.
 
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace ConfigurableBundleCosts
 {
@@ -27,43 +30,103 @@ namespace ConfigurableBundleCosts
 		/// <param name="helper" />
 		public override void Entry(IModHelper helper)
 		{
-			Globals.Config = helper.ReadConfig<ModConfig>();
-			Globals.Helper = helper;
-			Globals.Monitor = Monitor;
-			Globals.Manifest = ModManifest;
+			DeclareGlobals(helper);
 
 			modAssetEditor = new AssetEditor();
 			helper.Content.AssetEditors.Add(modAssetEditor);
 
 			helper.Events.GameLoop.GameLaunched += (sender, args) =>
 			{
-				ModConfigMenuHelper.TryLoadModConfigMenu();
+				CheckForContentPatcherAPI();
+				ContentPackHelper.RegisterTokens();
+				ContentPackHelper.CheckForValidContentPacks();
+				ModConfigMenuHelper.TryLoadModConfigMenu(); 
 				LoadAssets();
 			};
 			helper.Events.GameLoop.SaveLoaded += (sender, args) =>
 			{
+				ContentPackHelper.GetContentPacks();
+				ContentPackHelper.ProcessConfigOverrides();
+				CheckBundleData();
+			};
+			helper.Events.GameLoop.DayStarted += (sender, args) =>
+			{
+				ContentPackHelper.ProcessDailyUpdates();
 				CheckBundleData();
 			};
 
+			AddConsoleCommands();
+
+			ApplyPatches();
+		}
+
+		private void ApplyPatches()
+		{
 			Monitor.Log(HarmonyPatches.ApplyHarmonyPatches() ? "Patches successfully applied" : "Failed to apply patches");
 		}
-
-		private static void LoadAssets()
+		private void LoadAssets()
 		{
-			Globals.Monitor.Log(AssetEditor.LoadAssets() ? "Loaded assets" : "Failed to load assets");
+			Monitor.Log(AssetEditor.LoadAssets() ? "Loaded assets" : "Failed to load assets");
 		}
 
-		private static void CheckBundleData()
+		private void CheckBundleData()
 		{
-			AssetEditor.InvalidateCache();
-
-			try {
+			try
+			{
 				Game1.netWorldState?.Value?.SetBundleData(AssetEditor.bundleData);
 			}
 			catch (Exception ex)
 			{
-				Globals.Monitor.Log($"Exception encountered while updating bundle data in {nameof(CheckBundleData)}: {ex}", LogLevel.Error);
+				Monitor.Log($"Exception encountered while updating bundle data in {nameof(CheckBundleData)}: {ex}", LogLevel.Error);
 			}
+		}
+
+		private void CheckForContentPatcherAPI()
+		{
+			Monitor.Log(ContentPackHelper.TryLoadContentPatcherAPI() ? "Content Patcher API loaded" : "Failed to load Content Patcher API - ignoring extended content pack functionality");
+		}
+
+		private void AddConsoleCommands()
+		{
+			Globals.Helper.ConsoleCommands.Add("cbc_dump", "Dumps the current config values from Configurable Bundle Costs", (name, arg) => Globals.Monitor.Log(Globals.CurrentValues.ToString()));
+
+			Globals.Helper.ConsoleCommands.Add("cbc_reload_packs", "Reloads the internal list of content packs", (name, arg) => ContentPackHelper.ReloadContentPacks());
+			Globals.Helper.ConsoleCommands.Add("cbc_list_packs", "Lists the currently loaded content packs", (name, arg) =>
+				{
+					foreach (ContentPackData data in ContentPackHelper.GetContentPackList()) Globals.Monitor.Log(data.GetFolderName());
+				}
+			);
+			Globals.Helper.ConsoleCommands.Add("cbc_list_patches", "Lists the currently parsed patches", (name, arg) =>
+				{
+					foreach (ContentPackItem patch in ContentPackHelper.GetPatchList()) Globals.Monitor.Log(patch.Name);
+				}
+			);
+
+			Globals.Helper.ConsoleCommands.Add("cbc_reload_config", "Forces the current config values to be reloaded. Note that this will overwrite any changes which have occurred on this save's config file." +
+				"This command will have no effect outside of a loaded save.",
+				(name, arg) =>
+				{
+					if (Context.IsWorldReady)
+					{
+						ContentPackHelper.ProcessConfigOverrides(forceReload: true);
+						Globals.Monitor.Log("Reloading config values from file.");
+					}
+					else
+					{
+						Globals.Monitor.Log("This console command should only be used inside a loaded save.");
+					}
+				}
+			);
+		}
+
+		private void DeclareGlobals(IModHelper helper)
+		{
+			Globals.InitialValues = helper.ReadConfig<ModConfig>();
+			Globals.CurrentValues = new ModConfig();
+			Globals.Helper = helper;
+			Globals.Monitor = Monitor;
+			Globals.Manifest = ModManifest;
+			Globals.PackHelper = new ContentPackHelper();
 		}
 	}
 }

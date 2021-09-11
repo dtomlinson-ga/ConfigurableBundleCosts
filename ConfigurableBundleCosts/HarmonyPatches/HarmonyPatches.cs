@@ -58,19 +58,19 @@ namespace ConfigurableBundleCosts
 				switch (buttonNumber)
 				{
 					case 0:
-						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.busCost : 40000;
+						__result = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.busCost : 40000;
 						break;
 					case 1:
-						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.minecartsCost : 15000;
+						__result = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.minecartsCost : 15000;
 						break;
 					case 2:
-						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.bridgeCost : 25000;
+						__result = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.bridgeCost : 25000;
 						break;
 					case 3:
-						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.greenhouseCost : 35000;
+						__result = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.greenhouseCost : 35000;
 						break;
 					case 4:
-						__result = Globals.Config.Joja.applyValues ? Globals.Config.Joja.panningCost : 20000;
+						__result = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.panningCost : 20000;
 						break;
 					default:
 						__result = 10000;
@@ -92,7 +92,7 @@ namespace ConfigurableBundleCosts
 		{
 			try
 			{
-				int cost = Globals.Config.Joja.applyValues ? Globals.Config.Joja.movieTheaterCost : 500000;
+				int cost = Globals.CurrentValues.Joja.applyValues ? Globals.CurrentValues.Joja.movieTheaterCost : 500000;
 
 				if (response == 0)
 				{

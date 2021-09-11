@@ -38,6 +38,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ContentPatcher" HintPath="D:\Games\SteamLibrary\steamapps\common\Stardew Valley\Mods\ContentPatcher\ContentPatcher.dll" Private="False" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
@@ -53,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ContentPackData.cs" />
+    <Compile Include="Config\ContentPackHelper.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatches.cs" />
     <Compile Include="Utilities\AssetEditor.cs" />
     <Compile Include="Utilities\Globals.cs" />

@@ -24,7 +24,6 @@ namespace ConfigurableBundleCosts
 	{
 
 		private static IGenericModConfigMenuAPI api;
-		private static bool suppliedByContentPack = false;
 
 		/// <summary>
 		/// Checks to see if GMCM is installed - if so, creates options page with all configurable settings.
@@ -43,11 +42,11 @@ namespace ConfigurableBundleCosts
 
 				api = Globals.Helper.ModRegistry.GetApi<IGenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
 				api.RegisterModConfig(Globals.Manifest,
-					() => Globals.Config = new ModConfig(),
-					() => Globals.Helper.WriteConfig(Globals.Config)
+					() => Globals.InitialValues = new ModConfig(),
+					() => Globals.Helper.WriteConfig(Globals.InitialValues)
 				);
 
-				CheckForContentPacks();
+				//CheckForContentPacks();
 				RegisterModOptions();
 				return true;
 			}
@@ -59,112 +58,80 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		public static void CheckForContentPacks()
-		{
-			foreach (IContentPack contentPack in Globals.Helper.ContentPacks.GetOwned())
-			{
-				if (!contentPack.HasFile("config.json"))
-				{
-					Globals.Monitor.Log($"Required file missing in content pack {contentPack.Manifest.Name}: config.json", LogLevel.Warn);
-					Globals.Monitor.Log("Skipping content pack", LogLevel.Warn);
-				}
-				else
-				{
-					Globals.Monitor.Log($"Located config.json in content pack {contentPack.Manifest.Name} - applying values");
-
-					try
-					{
-						ModConfig configData = contentPack.ReadJsonFile<ModConfig>("config.json");
-						Globals.Config = configData;
-						suppliedByContentPack = true;
-					}
-					catch (Exception ex)
-					{
-						Globals.Monitor.Log($"Exception encountered while parsing config.json provided by {contentPack.Manifest.Name}: \n{ex}", LogLevel.Error);
-						Globals.Monitor.Log("Falling back to default config values", LogLevel.Warn);
-						Globals.Config = new ModConfig();
-					}
-				}
-			}
-		}
-
 		/// <summary>
-		/// Adds all descriptions and options to options page.
+		/// Adds all descriptions and options to options page. Adds disclaimer if content packs are loaded that they will take priority over values set here.
 		/// </summary>
 		public static void RegisterModOptions()
 		{
-			if (suppliedByContentPack)
+			if (ContentPackHelper.contentPacksLoaded)
 			{
-				AddParagraph("Note: The current values are supplied by a downloaded content pack for this mod, and changing them may run counter to the creator's desired effect.");
+				AddLabel("Note:");
+				AddParagraph("Any values provided by a loaded content pack will take priority over values set here. To override content-pack-provided values, see Configurable Bundle Cost's NexusMods page for instructions on creating a config.override.json file.");
 				AddLabel("");
 			}
 
 			AddCheckBox("Apply Joja config", "Enables or disables these values being applied. May be useful if you are using another mod or content pack which alters these values.",
-				() => Globals.Config.Joja.applyValues,
-				(bool var) => Globals.Config.Joja.applyValues = var
+				() => Globals.InitialValues.Joja.applyValues,
+				(bool var) => Globals.InitialValues.Joja.applyValues = var
 			);
 
 			AddLabel("Joja Bundle Costs");
 			AddIntUnclamped("Bus Cost", "Cost to repair the bus to Calico Desert",
-				() => Globals.Config.Joja.busCost,
-				(int var) => Globals.Config.Joja.busCost = var
+				() => Globals.InitialValues.Joja.busCost,
+				(int var) => Globals.InitialValues.Joja.busCost = var
 			);
 
 			AddIntUnclamped("Minecarts Cost", "Cost to repair the minecart system around town",
-				() => Globals.Config.Joja.minecartsCost,
-				(int var) => Globals.Config.Joja.minecartsCost = var
+				() => Globals.InitialValues.Joja.minecartsCost,
+				(int var) => Globals.InitialValues.Joja.minecartsCost = var
 			);
 
 			AddIntUnclamped("Bridge Cost", "Cost to repair the bridge to the quarry",
-				() => Globals.Config.Joja.bridgeCost,
-				(int var) => Globals.Config.Joja.bridgeCost = var
+				() => Globals.InitialValues.Joja.bridgeCost,
+				(int var) => Globals.InitialValues.Joja.bridgeCost = var
 			);
 
 			AddIntUnclamped("Greenhouse Cost", "Cost to repair the greenhouse on the farm",
-				() => Globals.Config.Joja.greenhouseCost,
-				(int var) => Globals.Config.Joja.greenhouseCost = var
+				() => Globals.InitialValues.Joja.greenhouseCost,
+				(int var) => Globals.InitialValues.Joja.greenhouseCost = var
 			);
 
 			AddIntUnclamped("Panning Cost", "Cost to remove the glittering boulder on the mountain",
-				() => Globals.Config.Joja.panningCost,
-				(int var) => Globals.Config.Joja.panningCost = var
+				() => Globals.InitialValues.Joja.panningCost,
+				(int var) => Globals.InitialValues.Joja.panningCost = var
 			);
 
 			AddIntUnclamped("Movie Theater Cost", "Cost to purchase the Movie Theater from Joja",
-				() => Globals.Config.Joja.movieTheaterCost,
-				(int var) => 
-					{
-						Globals.Config.Joja.movieTheaterCost = var;
-						//AssetEditor.InvalidateCache(); // dialogue line is modified depending on value of movieTheaterCost
-					}
+				() => Globals.InitialValues.Joja.movieTheaterCost,
+				(int var) => Globals.InitialValues.Joja.movieTheaterCost = var
 			);
 
 			AddLabel("");
 
 			AddCheckBox("Apply Vault config", "Enables or disables these values being applied. May be useful if you are using another mod or content pack which alters these values.",
-				() => Globals.Config.Vault.applyValues,
-				(bool var) => Globals.Config.Vault.applyValues = var
+				() => Globals.InitialValues.Vault.applyValues,
+				(bool var) => Globals.InitialValues.Vault.applyValues = var
 			);
 			AddLabel("Vault Bundle Costs");
 
 			AddIntUnclamped("Vault Bundle 1 Cost", "Cost of Vault Bundle 1",
-				() => Globals.Config.Vault.bundle1,
-				(int var) => Globals.Config.Vault.bundle1 = var
+				() => Globals.InitialValues.Vault.bundle1,
+				(int var) => Globals.InitialValues.Vault.bundle1 = var
 			);
 
 			AddIntUnclamped("Vault Bundle 2 Cost", "Cost of Vault Bundle 2",
-				() => Globals.Config.Vault.bundle2,
-				(int var) => Globals.Config.Vault.bundle2 = var
+				() => Globals.InitialValues.Vault.bundle2,
+				(int var) => Globals.InitialValues.Vault.bundle2 = var
 			);
 
 			AddIntUnclamped("Vault Bundle 3 Cost", "Cost of Vault Bundle 3",
-				() => Globals.Config.Vault.bundle3,
-				(int var) => Globals.Config.Vault.bundle3 = var
+				() => Globals.InitialValues.Vault.bundle3,
+				(int var) => Globals.InitialValues.Vault.bundle3 = var
 			);
 
 			AddIntUnclamped("Vault Bundle 4 Cost", "Cost of Vault Bundle 4",
-				() => Globals.Config.Vault.bundle4,
-				(int var) => Globals.Config.Vault.bundle4 = var
+				() => Globals.InitialValues.Vault.bundle4,
+				(int var) => Globals.InitialValues.Vault.bundle4 = var
 			);
 
 		}
