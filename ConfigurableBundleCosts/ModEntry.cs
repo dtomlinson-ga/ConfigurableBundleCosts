@@ -96,6 +96,7 @@ namespace ConfigurableBundleCosts
 					foreach (ContentPackData data in ContentPackHelper.GetContentPackList()) Globals.Monitor.Log(data.GetFolderName());
 				}
 			);
+			Globals.Helper.ConsoleCommands.Add("cbc_reload_patches", "Reloads the internal list of patches", (name, arg) => ContentPackHelper.ReloadContentPacks(true));
 			Globals.Helper.ConsoleCommands.Add("cbc_list_patches", "Lists the currently parsed patches", (name, arg) =>
 				{
 					foreach (ContentPackItem patch in ContentPackHelper.GetPatchList()) Globals.Monitor.Log(patch.Name);

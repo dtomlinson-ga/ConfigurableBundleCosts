@@ -321,7 +321,7 @@ namespace ConfigurableBundleCosts
 			}
 		}
 
-		public static void GetContentPacks()
+		public static void GetContentPacks(bool forcePatchReload = false)
 		{
 			foreach (IContentPack contentPack in Globals.Helper.ContentPacks.GetOwned())
 			{
@@ -329,25 +329,24 @@ namespace ConfigurableBundleCosts
 				packData.SetFolderName(contentPack.Manifest.Name);
 				packDataList.Add(packData);
 
-				//contentPack.WriteJsonFile("test_output.json", packData);
-
-				patchList = ParseContentPackPatches(packData);
+				patchList = patchList.Concat(ParseContentPackPatches(packData, forcePatchReload)).ToList();
 			}
 		}
 
-		public static void ReloadContentPacks()
+		public static void ReloadContentPacks(bool forcePatchReload = false)
 		{
 			packDataList = new();
-			GetContentPacks();
+			patchList = forcePatchReload ? new() : patchList;
+			GetContentPacks(forcePatchReload);
 
 			Globals.Monitor.Log("Reloaded content packs");
 		}
 
-		private static List<ContentPackItem> ParseContentPackPatches(ContentPackData packData)
+		private static List<ContentPackItem> ParseContentPackPatches(ContentPackData packData, bool forceReload = false)
 		{
 			List<ContentPackItem> patches = null;
 
-			if (Context.IsWorldReady)
+			if (Context.IsWorldReady && !forceReload)
 			{
 				patches = Globals.Helper.Data.ReadSaveData<List<ContentPackItem>>("Saved_Patches");
 			}
