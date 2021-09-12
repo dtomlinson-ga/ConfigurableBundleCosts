@@ -128,6 +128,9 @@ Here is an annotated `content.json`:
       ]
     }
 
+Target values are case-insensitive and may be fully qualified (Joja.busCost) or not (bundle3). The following are all valid Target values:
+`JOJA.minecartscost`, `vault.bundle4`, `GREENHOUSECOST`, `jOjA.gReEnHoUsEcOsT`.
+
 Possible config values:
 
 |  | Option | Type | Can be set in Patch |
