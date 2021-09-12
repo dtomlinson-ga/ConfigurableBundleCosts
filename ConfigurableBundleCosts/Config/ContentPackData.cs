@@ -16,11 +16,7 @@
 
 using ContentPatcher;
 using StardewModdingAPI.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
 namespace ConfigurableBundleCosts
 {

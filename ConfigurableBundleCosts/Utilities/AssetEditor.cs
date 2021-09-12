@@ -24,7 +24,7 @@ using System.Linq;
 
 namespace ConfigurableBundleCosts
 {
-	class AssetEditor : IAssetEditor
+	internal class AssetEditor : IAssetEditor
 	{
 		private static Texture2D cdFont;
 		public static Dictionary<string, string> bundleData;
@@ -74,10 +74,18 @@ namespace ConfigurableBundleCosts
 		/// </summary>
 		public void Edit<T>(IAssetData asset)
 		{
-			if (asset.AssetNameEquals(jojaCDForm) && Globals.CurrentValues.Joja.applyValues) UpdateCDForm(asset);
-			else if (asset.AssetNameEquals(bundles) && Globals.CurrentValues.Vault.applyValues) UpdateBundles(asset);
-			else if (asset.AssetNameEquals(extraDialogue) && Globals.CurrentValues.Joja.applyValues) UpdateExtraDialogue(asset);
-
+			if (asset.AssetNameEquals(jojaCDForm) && Globals.CurrentValues.Joja.applyValues)
+			{
+				UpdateCDForm(asset);
+			}
+			else if (asset.AssetNameEquals(bundles) && Globals.CurrentValues.Vault.applyValues)
+			{
+				UpdateBundles(asset);
+			}
+			else if (asset.AssetNameEquals(extraDialogue) && Globals.CurrentValues.Joja.applyValues)
+			{
+				UpdateExtraDialogue(asset);
+			}
 		}
 
 		/// <summary>
@@ -232,7 +240,10 @@ namespace ConfigurableBundleCosts
 
 		private static void UpdateExtraDialogue(IAssetData asset)
 		{
-			if (Globals.CurrentValues.Joja.movieTheaterCost == 500000) return;
+			if (Globals.CurrentValues.Joja.movieTheaterCost == 500000)
+			{
+				return;
+			}
 
 			IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 			CultureInfo culture = CultureInfo.GetCultureInfo(Globals.Helper.Translation.Locale);
@@ -266,8 +277,13 @@ namespace ConfigurableBundleCosts
 				case "panning":
 					{
 						if (Globals.Helper.Translation.Locale.ToLower().Equals("de-de"))
+						{
 							return panningOnesDigitGerman;
-						else return panningOnesDigit;
+						}
+						else
+						{
+							return panningOnesDigit;
+						}
 					}
 				default:
 					{

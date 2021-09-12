@@ -16,7 +16,7 @@ using StardewModdingAPI;
 
 namespace ConfigurableBundleCosts
 {
-	class Globals
+	internal class Globals
 	{
 		public static IManifest Manifest { get; set; }
 		public static ModConfig InitialValues { get; set; }
