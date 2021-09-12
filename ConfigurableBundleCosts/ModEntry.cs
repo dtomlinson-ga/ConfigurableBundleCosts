@@ -45,7 +45,7 @@ namespace ConfigurableBundleCosts
 			};
 			helper.Events.GameLoop.SaveLoaded += (sender, args) =>
 			{
-				ContentPackHelper.GetContentPacks();
+				ContentPackHelper.ReloadContentPacks();
 				ContentPackHelper.ProcessConfigOverrides();
 				CheckBundleData();
 			};
