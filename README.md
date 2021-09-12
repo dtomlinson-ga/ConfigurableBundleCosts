@@ -63,6 +63,8 @@ Here is an annotated `content.json`:
           // Possible config values are listed below
           "busCost": 500,
           "minecartsCost": 15000
+	  
+	  // Values which are omitted, or set to null, will be ignored
         },
         "Vault": {
           // if any fields are omitted, the game will use values from config.json
