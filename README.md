@@ -147,6 +147,9 @@ Possible config values:
 
 Detailed description of config values available on this mod's NexusMods page.
 
+### Content Patcher Integration
+As detailed above, the `Conditions` field of a Patch will support any CP-provided tokens, as well as any tokens which are provided by a mod listed as a dependency in your `manifest.json`. Additionally, this mod exposes all config values as tokens for use with other CP packs, provided they list this mod as a dependency. This means you can, for example, send a letter to inform the player of a discount on Joja bundles. You can reference a token as such: `Vertigon.ConfigurableBundleCosts/busCost`. It's probably also a good idea to make sure `applyValues` is true, by checking the appropriate token as well - `Vertigon.ConfigurableBundleCosts/JojaApplyValues` for Joja bundles and `Vertigon.ConfigurableBundleCosts/VaultApplyValues` for Vault bundles.
+
 ### Console Commands
 Note that these are not recommended for casual players, but may provide some assistance to developers looking to debug their content packs and/or pinpoint unintended behaviors. Enter into the SMAPI console window to execute.
 
